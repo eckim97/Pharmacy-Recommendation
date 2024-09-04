@@ -1,5 +1,6 @@
 package com.example.phamnav.pharmacy.service;
 
+import com.example.phamnav.pharmacy.cache.PharmacyRedisTemplateService;
 import com.example.phamnav.pharmacy.dto.PharmacyDto;
 import com.example.phamnav.pharmacy.entity.Pharmacy;
 import lombok.RequiredArgsConstructor;
@@ -15,9 +16,14 @@ import java.util.stream.Collectors;
 public class PharmacySearchService {
 
     private final PharmacyRepositoryService pharmacyRepositoryService;
+
+    private final PharmacyRedisTemplateService pharmacyRedisTemplateService;
+
     public List<PharmacyDto> searchPharmacyDtoList() {
 
         //redis
+         List<PharmacyDto> pharmacyDtoList = pharmacyRedisTemplateService.findAll();
+        if(!pharmacyDtoList.isEmpty()) return pharmacyDtoList;
 
         //db
         return pharmacyRepositoryService.findAll()
