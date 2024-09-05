@@ -36,6 +36,10 @@ spring:
       ddl-auto: validate
     show-sql: true
 
+  web:
+    resources:
+      static-locations: classpath:/static/
+
 pharmacy:
   recommendation:
     base:
