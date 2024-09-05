@@ -62,4 +62,4 @@ spring:
 pharmacy:
   recommendation:
     base:
-      url: http://localhost/dir/
+      url: http://13.125.188.32/dir/
