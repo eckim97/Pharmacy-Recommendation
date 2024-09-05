@@ -66,4 +66,4 @@ spring:
 pharmacy:
   recommendation:
     base:
-      url: http://13.125.188.32/dir/
+      url: http://3.38.83.24/dir/
