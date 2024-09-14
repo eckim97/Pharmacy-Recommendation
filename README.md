@@ -80,9 +80,6 @@
 **로드뷰**
 <img width="100%" alt="PharmResult4" src="https://github.com/eckim97/-Github-User-Content/blob/main/PharmResult4.jpeg">
 
-## 데모 페이지 
-http://3.38.83.24
-
 ## 실행 방법
 1. 프로젝트 클론
 - `git clone https://github.com/eckim97/Pharmacy-Recommendation.git`
@@ -109,6 +106,8 @@ http://3.38.83.24
 4. Docker 컨테이너 실행
 - `docker-compose -f docker-compose-local.yml up --build`
 
+5. 애플리케이션 접속
+- 웹 브라우저에서 `http://localhost:8080` 접속
 참고
 - KAKAO_REST_API_KEY는 실제 발급받은 키로 교체해야 합니다.
 - 로컬 개발 환경에서는 `docker-compose-local.yml`을 사용합니다.
