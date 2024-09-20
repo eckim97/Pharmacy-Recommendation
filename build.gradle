@@ -28,6 +28,8 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
+    implementation 'org.springframework.kafka:spring-kafka'
+
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
     // spring retry
@@ -54,6 +56,9 @@ dependencies {
 
     // 런타임에 클래스 기반 spock mock을 만들기 위해서 필요
     testImplementation('net.bytebuddy:byte-buddy:1.12.10')
+
+    // Kafka
+    implementation 'org.springframework.kafka:spring-kafka'
 }
 
 test {
