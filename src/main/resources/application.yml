@@ -33,8 +33,24 @@ spring:
     port: 6379
   jpa:
     hibernate:
-      ddl-auto: validate
+      ddl-auto: create
     show-sql: true
+
+  kafka:
+    bootstrap-servers: 52.79.207.254:9092,3.34.143.67:9092,3.38.212.167:9092
+    consumer:
+      group-id: pharmacy-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+    properties:
+      request.timeout.ms: 60000
+      max.block.ms: 60000
+      retry.backoff.ms: 1000
+      retries: 3
 
   web:
     resources:
@@ -44,7 +60,16 @@ pharmacy:
   recommendation:
     base:
       url: http://localhost:8080/dir/
-
+  csv:
+    filepath: ${user.dir}/database/init/pharmacy.csv
+logging:
+  level:
+    com.example.phamnav: DEBUG
+    org:
+      springframework:
+        data:
+          redis: DEBUG
+          kafka: DEBUG
 ---
 spring:
   config:
@@ -62,8 +87,19 @@ spring:
     hibernate:
       ddl-auto: validate # prod 배포시 validate
     show-sql: true
-
+  kafka:
+    bootstrap-servers: 52.79.207.254:9092,3.34.143.67:9092,3.38.212.167:9092
+    consumer:
+      group-id: pharmacy-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
 pharmacy:
   recommendation:
     base:
       url: http://3.38.83.24/dir/
+  csv:
+    filepath: /path/to/your/pharmacy.csv
