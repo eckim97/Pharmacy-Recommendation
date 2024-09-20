@@ -2,6 +2,7 @@ package com.example.phamnav.pharmacy.service;
 
 import com.example.phamnav.pharmacy.cache.PharmacyRedisTemplateService;
 import com.example.phamnav.pharmacy.dto.PharmacyDto;
+import com.example.phamnav.kafka.service.PharmacyProducer;
 import com.example.phamnav.pharmacy.entity.Pharmacy;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,23 +17,26 @@ import java.util.stream.Collectors;
 public class PharmacySearchService {
 
     private final PharmacyRepositoryService pharmacyRepositoryService;
-
     private final PharmacyRedisTemplateService pharmacyRedisTemplateService;
 
     public List<PharmacyDto> searchPharmacyDtoList() {
-
-        //redis
-         List<PharmacyDto> pharmacyDtoList = pharmacyRedisTemplateService.findAll();
+        // Redis에서 데이터 조회
+        List<PharmacyDto> pharmacyDtoList = pharmacyRedisTemplateService.findAll();
         if(!pharmacyDtoList.isEmpty()){
-            log.info("redis findAll success!");
+            log.info("Redis findAll success!");
             return pharmacyDtoList;
         }
 
-        //db
-        return pharmacyRepositoryService.findAll()
+        // DB에서 데이터 조회
+        pharmacyDtoList = pharmacyRepositoryService.findAll()
                 .stream()
                 .map(this::convertToPharmacyDto)
                 .collect(Collectors.toList());
+
+        // Redis에 데이터 저장
+        pharmacyDtoList.forEach(pharmacyRedisTemplateService::save);
+
+        return pharmacyDtoList;
     }
 
     private PharmacyDto convertToPharmacyDto(Pharmacy pharmacy) {
