@@ -9,12 +9,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class PharmacyConsumer {
 
     private static final Logger log = LoggerFactory.getLogger(PharmacyConsumer.class);
     private final PharmacyRepository pharmacyRepository;
+    private final List<Pharmacy> buffer = new ArrayList<>();
+    private static final int BATCH_SIZE = 100;
 
     @KafkaListener(topics = "pharmacy-data", groupId = "pharmacy-group")
     public void consume(ConsumerRecord<String, String> record) {
@@ -34,8 +39,13 @@ public class PharmacyConsumer {
                     .longitude(Double.parseDouble(values[4].trim()))
                     .build();
 
-            pharmacyRepository.save(pharmacy);
-            log.debug("Saved pharmacy to database: {}", pharmacy.getPharmacyName());
+            buffer.add(pharmacy);
+
+            if (buffer.size() >= BATCH_SIZE) {
+                pharmacyRepository.saveAll(buffer);
+                buffer.clear();
+                log.info("Batch of {} pharmacies saved to database", BATCH_SIZE);
+            }
 
         } catch (Exception e) {
             log.error("Error processing message: {}", record.value(), e);
