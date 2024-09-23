@@ -15,9 +15,19 @@ public class KafkaTestController {
         this.pharmacyProducer = pharmacyProducer;
     }
 
-    @PostMapping("/send-pharmacy-data")
-    public String sendPharmacyData() {
+    @PostMapping("/send-pharmacy-data-to-redis")
+    public String sendPharmacyDataToRedis() {
+        long startTime = System.currentTimeMillis();
+        int count = pharmacyProducer.sendPharmacyDataToRedis();
+        long endTime = System.currentTimeMillis();
+        return "Pharmacy data sent to Redis. Total messages sent: " + count + ". Time taken: " + (endTime - startTime) + " ms";
+    }
+
+    @PostMapping("/send-pharmacy-data-to-kafka")
+    public String sendPharmacyDataToKafka() {
+        long startTime = System.currentTimeMillis();
         int count = pharmacyProducer.sendPharmacyDataFromCsv();
-        return "Pharmacy data sent to Kafka. Total messages sent: " + count;
+        long endTime = System.currentTimeMillis();
+        return "Pharmacy data sent to Kafka. Total messages sent: " + count + ". Time taken: " + (endTime - startTime) + " ms";
     }
 }
