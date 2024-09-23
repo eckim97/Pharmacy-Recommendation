@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: local # default profile
+    active: local
     group:
       local:
         - common
@@ -25,7 +25,7 @@ spring:
       on-profile: local
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
-    url: jdbc:mariadb://localhost:3306/pharmacy-recommendation
+    url: jdbc:mariadb://localhost:3307/pharmacy-recommendation
     username: ${SPRING_DATASOURCE_USERNAME}
     password: ${SPRING_DATASOURCE_PASSWORD}
   redis:
@@ -37,7 +37,7 @@ spring:
     show-sql: true
 
   kafka:
-    bootstrap-servers: 52.79.207.254:9092,3.34.143.67:9092,3.38.212.167:9092
+    bootstrap-servers: localhost:9092
     consumer:
       group-id: pharmacy-group
       auto-offset-reset: earliest
@@ -62,6 +62,7 @@ pharmacy:
       url: http://localhost:8080/dir/
   csv:
     filepath: ${user.dir}/database/init/pharmacy.csv
+
 logging:
   level:
     com.example.phamnav: DEBUG
@@ -70,6 +71,7 @@ logging:
         data:
           redis: DEBUG
           kafka: DEBUG
+
 ---
 spring:
   config:
@@ -85,7 +87,7 @@ spring:
     port: 6379
   jpa:
     hibernate:
-      ddl-auto: validate # prod 배포시 validate
+      ddl-auto: validate
     show-sql: true
   kafka:
     bootstrap-servers: 52.79.207.254:9092,3.34.143.67:9092,3.38.212.167:9092
@@ -97,9 +99,10 @@ spring:
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
+
 pharmacy:
   recommendation:
     base:
       url: http://3.38.83.24/dir/
   csv:
-    filepath: /path/to/your/pharmacy.csv
+    filepath: ${user.dir}/database/init/pharmacy.csv
