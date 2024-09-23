@@ -10,12 +10,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.config.TopicBuilder;
 import org.springframework.kafka.core.KafkaAdmin;
 
-import javax.annotation.PostConstruct;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ExecutionException;
 
 @Configuration
 @Slf4j
@@ -29,18 +26,16 @@ public class KafkaConfig {
     @Value("${kafka.topic.partitions:3}")
     private int partitions;
 
-    @Value("${kafka.topic.replication-factor:3}")
+    @Value("${kafka.topic.replication-factor:1}") // 로컬 환경에서는 replication factor를 1로 설정
     private short replicationFactor;
 
     @Bean
     public NewTopic pharmacyTopic() {
-        NewTopic topic = TopicBuilder.name(topicName)
+        return TopicBuilder.name(topicName)
                 .partitions(partitions)
                 .replicas(replicationFactor)
-                .configs(Map.of("min.insync.replicas", "2"))
+                .configs(Map.of("min.insync.replicas", "1")) // 로컬 환경에서는 min.insync.replicas를 1로 설정
                 .build();
-        log.info("Created Kafka topic: {}", topic);
-        return topic;
     }
 
     @Bean
@@ -50,24 +45,8 @@ public class KafkaConfig {
         return new KafkaAdmin(configs);
     }
 
-    @PostConstruct
-    public void initializeKafkaTopic() {
-        AdminClient adminClient = AdminClient.create(
-                Collections.singletonMap(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers)
-        );
-
-        try {
-            Set<String> existingTopics = adminClient.listTopics().names().get();
-            if (!existingTopics.contains("pharmacy-data")) {
-                adminClient.createTopics(Collections.singleton(pharmacyTopic())).all().get();
-                log.info("pharmacy-data 토픽이 성공적으로 생성되었습니다.");
-            } else {
-                log.info("pharmacy-data 토픽이 이미 존재합니다.");
-            }
-        } catch (InterruptedException | ExecutionException e) {
-            log.error("Kafka 토픽 초기화 중 오류 발생: ", e);
-        } finally {
-            adminClient.close();
-        }
+    @Bean
+    public AdminClient adminClient() {
+        return AdminClient.create(Collections.singletonMap(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers));
     }
 }
