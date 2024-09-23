@@ -1,12 +1,17 @@
-services:                                               # 이 항목 밑에 실행하려는 컨테이너들을 정의
-  pharmacy-recommendation-redis:                        # 서비스명
-    container_name: pharmacy-recommendation-redis       # 컨테이너 명
+version: '3'
+
+services:
+  pharmacy-recommendation-redis:
+    container_name: pharmacy-recommendation-redis
     build:
       dockerfile: Dockerfile
       context: ./redis
     image: eunhan97/pharmacy-recommendation-redis
     ports:
       - "6379:6379"
+    networks:
+      - pharmacy-recommendation-network
+
   pharmacy-recommendation-database:
     container_name: pharmacy-recommendation-database
     build:
@@ -20,4 +25,49 @@ services:                                               # 이 항목 밑에 실�
       - ./database/config:/etc/mysql/conf.d
       - ./database/init:/docker-entrypoint-initdb.d
     ports:
-      - "3306:3306"      # 접근 포트 설정 (컨테이너 외부:컨테이너 내부)
+      - "3307:3306"
+    networks:
+      - pharmacy-recommendation-network
+
+  zookeeper:
+    image: bitnami/zookeeper:latest
+    ports:
+      - "2181:2181"
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+    networks:
+      - pharmacy-recommendation-network
+
+  kafka:
+    image: bitnami/kafka:latest
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_CFG_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_CFG_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_CFG_LISTENERS: PLAINTEXT://:9092
+    depends_on:
+      - zookeeper
+    networks:
+      - pharmacy-recommendation-network
+
+  pharmacy-recommendation-app:
+    container_name: pharmacy-recommendation-app
+    build:
+      context: .
+    environment:
+      - SPRING_DATASOURCE_USERNAME=${SPRING_DATASOURCE_USERNAME}
+      - SPRING_DATASOURCE_PASSWORD=${SPRING_DATASOURCE_PASSWORD}
+      - KAKAO_REST_API_KEY=${KAKAO_REST_API_KEY}
+    ports:
+      - "8080:8080"
+    depends_on:
+      - pharmacy-recommendation-database
+      - pharmacy-recommendation-redis
+      - kafka
+    networks:
+      - pharmacy-recommendation-network
+
+networks:
+  pharmacy-recommendation-network:
+    driver: bridge
