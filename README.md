@@ -50,7 +50,7 @@
 - AWS EC2를 이용한 클라우드 배포
 - Spring Retry를 이용한 재처리 구현 (카카오 API의 네트워크 오류 등)   
 - Base62를 이용한 shorten url 개발 (길안내 URL)   
-- Redis를 이용하여 성능 최적화하기
+- Redis & Kafka를 이용하여 성능 최적화하기
 
 ## Tech Stack   
 - JDK 17
@@ -63,6 +63,7 @@
 - Docker
 - AWS EC2
 - Redis
+- Kafka
 - MariaDB
 - Spock   
 - Testcontainers
