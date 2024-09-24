@@ -10,10 +10,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -46,6 +43,31 @@ public class PharmacyRedisTemplateService {
             log.info("[PharmacyRedisTemplateService save success] id: {}", pharmacyDto.getId());
         } catch (Exception e) {
             log.error("[PharmacyRedisTemplateService save error] {}", e.getMessage());
+        }
+    }
+
+    public void saveAll(List<PharmacyDto> pharmacyDtoList) {
+        if (pharmacyDtoList == null || pharmacyDtoList.isEmpty()) {
+            log.warn("[PharmacyRedisTemplateService saveAll] Empty list provided");
+            return;
+        }
+
+        try {
+            Map<String, String> pharmacyMap = new HashMap<>();
+            for (PharmacyDto pharmacyDto : pharmacyDtoList) {
+                String jsonString = objectMapper.writeValueAsString(pharmacyDto);
+                pharmacyMap.put(pharmacyDto.getId().toString(), jsonString);
+            }
+
+            hashOperations.putAll(CACHE_KEY, pharmacyMap);
+
+            log.info("[PharmacyRedisTemplateService saveAll success] {} items saved", pharmacyDtoList.size());
+
+            // 저장 후 데이터 확인
+            long savedCount = hashOperations.size(CACHE_KEY);
+            log.info("[PharmacyRedisTemplateService saveAll] Total items in Redis: {}", savedCount);
+        } catch (JsonProcessingException e) {
+            log.error("[PharmacyRedisTemplateService saveAll error] {}", e.getMessage());
         }
     }
 
