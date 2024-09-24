@@ -65,12 +65,9 @@ pharmacy:
 
 logging:
   level:
+    root: INFO
     com.example.phamnav: DEBUG
-    org:
-      springframework:
-        data:
-          redis: DEBUG
-          kafka: DEBUG
+    org.springframework.data.redis: DEBUG
 
 ---
 spring:
