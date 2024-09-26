@@ -51,6 +51,7 @@
 - Spring Retry를 이용한 재처리 구현 (카카오 API의 네트워크 오류 등)   
 - Base62를 이용한 shorten url 개발 (길안내 URL)   
 - Redis & Kafka를 이용하여 성능 최적화하기
+- CI/CD 구축
 
 ## Tech Stack   
 - JDK 17
@@ -80,8 +81,6 @@
 
 **로드뷰**
 <img width="100%" alt="PharmResult4" src="https://github.com/eckim97/-Github-User-Content/blob/main/PharmResult4.jpeg">
-## 데모 페이지
-http://13.124.212.102/
 
 ## 실행 방법
 1. 프로젝트 클론
