@@ -7,6 +7,7 @@ import com.example.phamnav.direction.entity.Direction;
 import com.example.phamnav.direction.service.Base62Service;
 import com.example.phamnav.direction.service.DirectionService;
 import com.example.phamnav.dto.OutputDto;
+import com.example.phamnav.kafka.service.PharmacyProducer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,6 +28,7 @@ public class PharmacyRecommendationService {
     private final KakaoAddressSearchService kakaoAddressSearchService;
     private final DirectionService directionService;
     private final Base62Service base62Service;
+    private final PharmacyProducer pharmacyProducer;
 
     private static final String ROAD_VIEW_BASE_URL = "https://map.kakao.com/link/roadview/";
 
@@ -34,7 +36,6 @@ public class PharmacyRecommendationService {
     private String baseUrl;
 
     public List<OutputDto> recommendPharmacyList(String address) {
-
         KakaoApiResponseDto kakaoApiResponseDto = kakaoAddressSearchService.requestAddressSearch(address);
 
         if (Objects.isNull(kakaoApiResponseDto) || CollectionUtils.isEmpty(kakaoApiResponseDto.getDocumentList())) {
@@ -43,14 +44,12 @@ public class PharmacyRecommendationService {
         }
 
         DocumentDto documentDto = kakaoApiResponseDto.getDocumentList().get(0);
-        // 공공기관 약국 데이터
-        List<Direction> directionList = directionService.buildDriectionList(documentDto);
+        List<Direction> directionList = directionService.buildDirectionListByCategoryApi(documentDto);
 
-        // kakao api
-//        List<Direction> directionsList1 = directionService.buildDirectionListByCategoryApi(documentDto);
+        // Kafka를 통해 데이터 전송
+        directionList.forEach(pharmacyProducer::sendPharmacyData);
 
-        return directionService.saveAll(directionList)
-                .stream()
+        return directionList.stream()
                 .map(this::convertToOutputDto)
                 .collect(Collectors.toList());
     }
