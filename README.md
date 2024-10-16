@@ -53,19 +53,37 @@
 - CI/CD 구축
 
 ## Tech Stack   
+**Backend**
 - JDK 17
 - Spring Boot 2.6.7
 - Spring Data JPA
-- Gradle
-- Handlebars
-- Lombok
-- Github
-- Docker
-- AWS EC2
-- Redis
-- Kafka
+
+**Database**
 - MariaDB
-- Spock   
+- Redis
+
+**Build Tool**
+- Gradle
+
+**Template Engine**
+- Handlebars
+
+**Utility**
+- Lombok
+
+**Version Control & CI/CD**
+- Github
+- Github Actions
+
+**DevOps**
+- Docker
+- AWS (EC2, S3, CodeDeploy)
+
+**Messaging System**
+- Kafka
+
+**Testing**
+- Spock
 - Testcontainers
 
 ## Result   
